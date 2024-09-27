@@ -5,22 +5,28 @@ import { ethers } from "ethers";
 function App() {
   const [connected, setConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState("");
-  const [currentChainId, setCurrentChainId] = useState<number | null>(null);
+  const [currentChainId, setCurrentChainId] = useState<bigint | string | null>(
+    null
+  );
 
   // Function to connect/disconnect the wallet
   async function connectWallet() {
     if (!connected) {
       // Connect the wallet using ethers.js
       const provider = new ethers.BrowserProvider(window.ethereum);
+      const network = await provider.getNetwork();
       const signer = await provider.getSigner();
       const _walletAddress = await signer.getAddress();
+      console.log(network.chainId.toString().replace("n", ""));
       setConnected(true);
       setWalletAddress(_walletAddress);
+      setCurrentChainId(network.chainId.toString().replace("n", ""));
     } else {
       // Disconnect the wallet
-      window.ethereum.selectedAddress = null;
+      // window.ethereum.selectedAddress = null;
       setConnected(false);
       setWalletAddress("");
+      setCurrentChainId(null);
     }
   }
 
